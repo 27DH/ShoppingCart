@@ -9,6 +9,7 @@ import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Shader;
 import android.graphics.drawable.BitmapDrawable;
@@ -55,6 +56,25 @@ public class CircularImageView extends AppCompatImageView {
     private static final Bitmap.Config BITMAP_CONFIG = Bitmap.Config.ARGB_8888;
     private static final int COLORDRAWABLE_DIMENSION = 2;
 
+    private int badgeBorderWidth;
+    private int badgeBorderColor;
+    private int badgeRadius;
+    private int badgeBackgroundColor;
+    private int count;
+    private int badgeTextColor;
+    private float badgeTextSize;
+    private RectF badgeBorderRect = new RectF();
+    private Paint badgeBorderPaint = new Paint();
+    private Paint badgeBackgroundPaint = new Paint();
+    private Paint badgeTextPaint = new Paint();
+    private static final int DEFAULT_BADGE_BORDER_WIDTH = 0;
+    private static final int DEFAULT_BADGE_BORDER_COLOR = Color.BLACK;
+    private static final int DEFAULT_BADGE_BACKGROUND = Color.RED;
+    private static final int DEFAULT_BADGE_TEXT_COLOR = Color.WHITE;
+    //private static final int DEFAULT_BADGE_TEXT_SIZE = 5;
+    private static final double ROTATE_ANGLE = Math.PI / 4;
+
+
 
     public CircularImageView(Context context) {
         this(context,null);
@@ -72,6 +92,11 @@ public class CircularImageView extends AppCompatImageView {
         borderWith = a.getDimensionPixelSize(R.styleable.CircularImageView_border_with, DEFAULT_BORDER_WIDTH);
         borderColor = a.getColor(R.styleable.CircularImageView_border_color, DEFAULT_BORDER_COLOR);
         backgroundColor = a.getColor(R.styleable.CircularImageView_background_color,DEFAULT_BACKGROUND);
+
+        badgeBorderColor = a.getColor(R.styleable.CircularImageView_badge_border_color, DEFAULT_BADGE_BORDER_COLOR);
+        badgeBackgroundColor = a.getColor(R.styleable.CircularImageView_background_color, DEFAULT_BADGE_BACKGROUND);
+        badgeBorderWidth = a.getDimensionPixelSize(R.styleable.CircularImageView_badge_border_Width, DEFAULT_BADGE_BORDER_WIDTH);
+        badgeTextColor = a.getColor(R.styleable.CircularImageView_badge_text_color, DEFAULT_BADGE_TEXT_COLOR);
 
         a.recycle();
 
@@ -116,16 +141,7 @@ public class CircularImageView extends AppCompatImageView {
     }
 
 
-    /**
-     * This is called during layout when the size of this view has changed. If
-     * you were just added to the view hierarchy, you're called with the old
-     * values of 0.
-     *
-     * @param w    Current width of this view.
-     * @param h    Current height of this view.
-     * @param oldw Old width of this view.
-     * @param oldh Old height of this view.
-     */
+
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
@@ -203,6 +219,90 @@ public class CircularImageView extends AppCompatImageView {
             canvas.drawCircle(borderRect.centerX(), borderRect.centerY(), borderRadius, borderPaint);
         }
 
+
+        badgeBorderPaint.setAntiAlias(true);
+        badgeBorderPaint.setColor(badgeBorderColor);
+        badgeBorderPaint.setStyle(Paint.Style.STROKE);
+        badgeBorderPaint.setStrokeWidth(badgeBorderWidth);
+
+        badgeBackgroundPaint.setAntiAlias(true);
+        badgeBackgroundPaint.setColor(badgeBackgroundColor);
+        badgeBackgroundPaint.setStyle(Paint.Style.FILL);
+
+        badgeTextPaint.setAntiAlias(true);
+        badgeTextPaint.setColor(badgeTextColor);
+        badgeTextPaint.setTextAlign(Paint.Align.CENTER);
+
+
+
+        if (count != 0) {
+            if (count < 10 && count > 0){
+
+                double maxRadius = borderRadius - (borderRadius * Math.cos(ROTATE_ANGLE));
+                badgeRadius = (int) (maxRadius - badgeBorderWidth / 2);
+                float badgeCenterX = (float)(borderRect.centerX() + borderRadius * Math.cos(ROTATE_ANGLE));
+                float badgeCenterY = (float)(borderRect.centerY() - borderRadius * Math.sin(ROTATE_ANGLE));
+
+                if (badgeBackgroundColor != Color.TRANSPARENT) {
+                    canvas.drawCircle(badgeCenterX,badgeCenterY, badgeRadius - badgeBorderWidth / 2, badgeBackgroundPaint);
+                }
+
+
+                canvas.drawCircle(badgeCenterX,badgeCenterY, badgeRadius, badgeBorderPaint);
+
+                badgeTextSize = 0.8f * 2 * (badgeRadius - badgeBorderWidth / 2);
+                badgeTextPaint.setTextSize(badgeTextSize);
+
+                Rect textBounds = new Rect();
+                String text = count + "";
+                badgeTextPaint.getTextBounds(text, 0, text.length(), textBounds);
+                int offset = textBounds.height() / 2;
+                canvas.drawText(text, badgeCenterX, badgeCenterY + offset, badgeTextPaint );
+            } else if (count >= 10 && count < 100) {
+                double maxRadius = borderRadius - (borderRadius * Math.cos(ROTATE_ANGLE));
+                badgeRadius = (int) (maxRadius - badgeBorderWidth / 2);
+                float roundRectHeight = badgeRadius * 2.0f;
+                float roundRectWidth = borderRect.width()/ 2.0f - badgeBorderWidth;
+                RectF rect = new RectF(borderRect.centerX() + badgeBorderWidth / 2.0f, badgeBorderWidth / 2.0f,
+                        borderRect.centerX() + badgeBorderWidth / 2.0f + roundRectWidth, badgeBorderWidth / 2.0f + roundRectHeight);
+                RectF backgroundRect =  new RectF(borderRect.centerX() + badgeBorderWidth, badgeBorderWidth,
+                        borderRect.centerX() + roundRectWidth, roundRectHeight);
+
+                if (badgeBackgroundColor != Color.TRANSPARENT) {
+                    canvas.drawRoundRect(backgroundRect, 0.2f * roundRectWidth, roundRectHeight / 2.0f, badgeBackgroundPaint);
+                }
+
+                if (badgeBorderWidth != 0) {
+                    canvas.drawRoundRect(rect, 0.2f * roundRectWidth, roundRectHeight / 2.0f, badgeBorderPaint);
+                }
+
+                badgeTextSize = 0.8f * 2 * (badgeRadius - badgeBorderWidth / 2);
+                badgeTextPaint.setTextSize(badgeTextSize);
+                String text;
+                Rect textBounds = new Rect();
+                if (count > 99) {
+                    text = count + "+";
+                } else {
+                    text = count + "";
+                }
+
+                badgeTextPaint.getTextBounds(text, 0, text.length(), textBounds);
+                int offset = textBounds.height() / 2;
+                canvas.drawText(text, rect.centerX(), rect.centerY() + offset, badgeTextPaint );
+            }
+
+        }
+
+    }
+
+
+    public int getCount(){
+        return count;
+    }
+
+    public void setCount(int count){
+        this.count = count;
+        invalidate();
     }
 
 
@@ -299,5 +399,7 @@ public class CircularImageView extends AppCompatImageView {
     public void setCircleBackgroundColorResource(@ColorRes int circleBackgroundRes) {
         setCircleBackgroundColor(getContext().getResources().getColor(circleBackgroundRes));
     }
+
+
 
 }

@@ -4,5 +4,10 @@
         <attr name="border_with" format="dimension"/>
         <attr name="border_color" format="color"/>
         <attr name="background_color" format="color"/>
+        <attr name="badge_border_Width" format="dimension"/>
+        <attr name="badge_border_color" format="color"/>
+        <attr name="badge_background" format="color"/>
+        <attr name="badge_text_color" format="color"/>
+        <attr name="badge_text_size" format="color"/>
     </declare-styleable>
 </resources>

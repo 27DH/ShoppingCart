@@ -74,6 +74,8 @@ public class CircularImageView extends AppCompatImageView {
     //private static final int DEFAULT_BADGE_TEXT_SIZE = 5;
     private static final double ROTATE_ANGLE = Math.PI / 4;
 
+    private static final String DEFAULT_BADGE_NUMBER = "99+";
+
 
 
     public CircularImageView(Context context) {
@@ -258,7 +260,7 @@ public class CircularImageView extends AppCompatImageView {
                 badgeTextPaint.getTextBounds(text, 0, text.length(), textBounds);
                 int offset = textBounds.height() / 2;
                 canvas.drawText(text, badgeCenterX, badgeCenterY + offset, badgeTextPaint );
-            } else if (count >= 10 && count < 100) {
+            } else if (count >= 10) {
                 double maxRadius = borderRadius - (borderRadius * Math.cos(ROTATE_ANGLE));
                 badgeRadius = (int) (maxRadius - badgeBorderWidth / 2);
                 float roundRectHeight = badgeRadius * 2.0f;
@@ -281,7 +283,7 @@ public class CircularImageView extends AppCompatImageView {
                 String text;
                 Rect textBounds = new Rect();
                 if (count > 99) {
-                    text = count + "+";
+                    text = DEFAULT_BADGE_NUMBER;
                 } else {
                     text = count + "";
                 }

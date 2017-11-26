@@ -1,4 +1,4 @@
-imiate Meituan shopping cart
+imitate Meituan shopping cart
 
 ![image](https://github.com/27DH/ShoppingCart/blob/master/app/art/sample1.png)
 

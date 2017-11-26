@@ -63,7 +63,6 @@ public class CircularImageView extends AppCompatImageView {
     private int count;
     private int badgeTextColor;
     private float badgeTextSize;
-    private RectF badgeBorderRect = new RectF();
     private Paint badgeBorderPaint = new Paint();
     private Paint badgeBackgroundPaint = new Paint();
     private Paint badgeTextPaint = new Paint();
@@ -249,8 +248,9 @@ public class CircularImageView extends AppCompatImageView {
                     canvas.drawCircle(badgeCenterX,badgeCenterY, badgeRadius - badgeBorderWidth / 2, badgeBackgroundPaint);
                 }
 
-
-                canvas.drawCircle(badgeCenterX,badgeCenterY, badgeRadius, badgeBorderPaint);
+                if (badgeBorderWidth != 0) {
+                    canvas.drawCircle(badgeCenterX,badgeCenterY, badgeRadius, badgeBorderPaint);
+                }
 
                 badgeTextSize = 0.8f * 2 * (badgeRadius - badgeBorderWidth / 2);
                 badgeTextPaint.setTextSize(badgeTextSize);
@@ -400,6 +400,50 @@ public class CircularImageView extends AppCompatImageView {
 
     public void setCircleBackgroundColorResource(@ColorRes int circleBackgroundRes) {
         setCircleBackgroundColor(getContext().getResources().getColor(circleBackgroundRes));
+    }
+
+    public int getBadgeBackgroundColor(){
+        return badgeBackgroundColor;
+    }
+
+    public void setBadgeBackgroundColor(@ColorInt int badgeBackgroundColor) {
+        if (badgeBackgroundColor == this.badgeBackgroundColor) {
+            return;
+        }
+        this.badgeBackgroundColor = badgeBackgroundColor;
+        invalidate();
+    }
+
+    public void setBadgeBackgroundColorResource(@ColorRes int badgeBackgroundColorResource) {
+        setBadgeBackgroundColor(getContext().getResources().getColor(badgeBackgroundColorResource));
+    }
+
+    public int getBadgeBorderWidth(){
+        return badgeBorderWidth;
+    }
+
+    public void setBadgeBorderWidth(int badgeBorderWidth) {
+        if (this.badgeBorderWidth == badgeBorderWidth){
+            return;
+        }
+        this.badgeBorderWidth = badgeBorderWidth;
+        invalidate();
+    }
+
+    public int getBadgeBorderColor(){
+        return badgeBorderColor;
+    }
+
+    public void setBadgeBorderColor(@ColorInt int badgeBorderColor) {
+        if (badgeBorderColor == this.badgeBorderColor) {
+            return;
+        }
+        this.badgeBorderColor = badgeBorderColor;
+        invalidate();
+    }
+
+    public void setBadgeBorderColorResource(@ColorRes int badgeBorderColorResource) {
+        setBadgeBackgroundColor(getContext().getResources().getColor(badgeBorderColorResource));
     }
 
 
